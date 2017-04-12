@@ -18,10 +18,9 @@ def open_and_read_file(file_paths):
     # print contents
     return long_string
 
-# contents = open_and_read_file("gettysburg.txt")
 
 
-def make_chains(text_string):
+def make_chains(text_string, n):
     """Takes input text as string; returns dictionary of markov chains.
 
     A chain will be a key that consists of a tuple of (word1, word2)
@@ -46,21 +45,24 @@ def make_chains(text_string):
     chains = {}
 
     words = text_string.split()
-    for i in range(len(words) - 2):
 
-        bigram = (words[i], words[i + 1])
-        next_word = words[i + 2]
+    # For i up to the length - input:n, grab the ith to the i+nth (exclusive)
+    # values of words, casts to a tuple and uses that tuple as a key in
+    # dictionary.
+    i = 0
+    while i < (len(words) - n):
+        ngram = tuple(words[i:n+i])
+        next_word = words[i + n]
+        i += 1
 
         # If key does not exist in dictionary, add the (key, value) pair
         # to chains.
-        if bigram not in chains:
-            chains[bigram] = [next_word]
+        if ngram not in chains:
+            chains[ngram] = [next_word]
         else:
-            chains[bigram].append(next_word)
+            chains[ngram].append(next_word)
 
     return chains
-
-# print make_chains(contents)
 
 
 def make_text(chains):
@@ -68,30 +70,38 @@ def make_text(chains):
 
     words = []
 
-    # Getting first tuple to initialize our string
-    keys = list(chains)
-    link = choice(keys)
+    # Get a random key from a list of keys within the dictionary
+    link = choice(chains.keys())
 
     # for word in link:
     #     words.append(word)
 
+    # Add key ("link") to list of words.
     words.extend(link)
 
+    # While the key exists in the dictionary, grab random value at the key.
+    # Add to word list and update link to include the random value.
+    # i.e. (word1, word2, word3) + word4
+    while link in chains:
+        word = choice(chains[link])
+        words.append(word)
+        link = tuple(list(link[1:]) + [word])
+
     # Use the last two words in words as the new key
-    while (words[-2], words[-1]) in chains:
-        new_value = chains[(words[-2], words[-1])]
-        words.append(choice(new_value))
+    # while (words[len(words)], words[len(words)-1]) in chains:
+    #     new_value = chains[(words[-2], words[-1])]
+    #     words.append(choice(new_value))
 
     return " ".join(words)
 
 
-input_path = argv
+input_path = argv[1:]  # We don't want to pass in this script as a string
 
 # # Open the file and turn it into one long string
 input_text = open_and_read_file(input_path)
 
 # # Get a Markov chain
-chains = make_chains(input_text)
+chains = make_chains(input_text, 3)
 
 # # Produce random text
 random_text = make_text(chains)
