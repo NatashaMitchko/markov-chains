@@ -2,18 +2,21 @@
 
 
 from random import choice
+from sys import argv
 
 
-def open_and_read_file(file_path):
+def open_and_read_file(file_paths):
     """Takes file path as string; returns text as string.
 
     Takes a string that is a file path, opens the file, and turns
     the file's contents as one string of text.
     """
-
-    contents = open(file_path).read()
+    long_string = ''
+    for file_path in file_paths:
+        contents = open(file_path).read()
+        long_string += contents
     # print contents
-    return contents
+    return long_string
 
 # contents = open_and_read_file("gettysburg.txt")
 
@@ -69,27 +72,28 @@ def make_text(chains):
     keys = list(chains)
     link = choice(keys)
 
-    for word in link:
-        words.append(word)
+    # for word in link:
+    #     words.append(word)
+
+    words.extend(link)
 
     # Use the last two words in words as the new key
     while (words[-2], words[-1]) in chains:
         new_value = chains[(words[-2], words[-1])]
-
         words.append(choice(new_value))
 
     return " ".join(words)
 
 
-input_path = "gettysburg.txt"
+input_path = argv
 
-# Open the file and turn it into one long string
+# # Open the file and turn it into one long string
 input_text = open_and_read_file(input_path)
 
-# Get a Markov chain
+# # Get a Markov chain
 chains = make_chains(input_text)
 
-# Produce random text
+# # Produce random text
 random_text = make_text(chains)
 
 print random_text
