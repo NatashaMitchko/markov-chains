@@ -19,7 +19,6 @@ def open_and_read_file(file_paths):
     return long_string
 
 
-
 def make_chains(text_string, n):
     """Takes input text as string; returns dictionary of markov chains.
 
